@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "985095435375",
+    "firebase_url": "https://bihaber-cuneyt.firebaseio.com",
+    "project_id": "bihaber-cuneyt",
+    "storage_bucket": "bihaber-cuneyt.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:985095435375:android:59234a6b9ae418cd99099a",
+        "android_client_info": {
+          "package_name": "com.bihaber01"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "985095435375-hmkagun0ha3thoea3j247ova5dbcjtsm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDJYpcN1JsLp6NuL65DvDy6w9HoeUkKJIs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "985095435375-hmkagun0ha3thoea3j247ova5dbcjtsm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
