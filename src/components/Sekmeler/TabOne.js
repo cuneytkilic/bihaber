@@ -65,7 +65,7 @@ export default class TabOne extends Component {
     title: 'Duyurular',
     tabBarIcon: ({tintColor}) => (
       <Image
-        source={require('../../images/bell.png')}
+        source={require('../../../assets/images/bell.png')}
         style={{width: 20, height: 20}}
       />
     ),
@@ -138,7 +138,7 @@ export default class TabOne extends Component {
                 style={styles.icon_style}
                 onPress={() => this.info(item.Duyuru_id)}>
                 <Image
-                  source={require('../../images/information_icon.png')}
+                  source={require('../../../assets/images/information_icon.png')}
                   style={styles.resim_sytle}
                 />
               </TouchableOpacity>
@@ -162,7 +162,7 @@ export default class TabOne extends Component {
               <View style={styles.ust_bolge}>
                 <Image
                   style={styles.icon_bolgesi}
-                  source={require('../../images/logo.png')}
+                  source={require('../../../assets/images/logo.png')}
                 />
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={styles.baslik_bolgesi}>
@@ -187,7 +187,7 @@ export default class TabOne extends Component {
                       alignItems: 'center',
                     }}>
                     <Image
-                      source={require('../../images/book.png')}
+                      source={require('../../../assets/images/book.png')}
                       style={{width: 25, height: 25}}
                     />
                     <View style={{paddingBottom: 10}}>
@@ -200,7 +200,7 @@ export default class TabOne extends Component {
                       alignItems: 'center',
                     }}>
                     <Image
-                      source={require('../../images/calendar.png')}
+                      source={require('../../../assets/images/calendar.png')}
                       style={{width: 25, height: 25}}
                     />
                     <View style={{paddingBottom: 10}}>

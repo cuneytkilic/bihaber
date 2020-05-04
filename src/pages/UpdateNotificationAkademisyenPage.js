@@ -1,5 +1,5 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
-import {Picker} from 'native-base';
 import {
   StyleSheet,
   Image,
@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {TextInput, ScrollView} from 'react-native-gesture-handler';
 
-export default class componentName extends Component {
+export default class UpdateNotificationAkademisyenPage extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,24 +20,17 @@ export default class componentName extends Component {
       ders_id: '',
       baslik: '',
       icerik: '',
-      my_lessons_arr: [],
+      gelen_bildirim_id: this.props.navigation.state.params.gelen_bildirim_id,
       tokens_arr: [],
       bildirim_durum: '',
+      bildirim_detay: [],
       height: Dimensions.get('window').height,
       width: Dimensions.get('window').width,
     };
   }
 
-  FetchAllLessons = async () => {
-    //Hocalarla ilişkili olan dersler getiriliyor.
-    const response = await fetch(
-      'http://bihaber.ankara.edu.tr/api/BildirimDersleri',
-    );
-    const lessons = await response.json();
-    this.setState({my_lessons_arr: lessons});
-  };
   componentDidMount = async () => {
-    this.FetchAllLessons();
+    this.NotificationDetails();
   };
 
   PostNotification = async () => {
@@ -60,12 +53,13 @@ export default class componentName extends Component {
               this.SendNotification(item.Token_id);
             });
             this.SaveNotification();
+            this.DeletePreviousNotification();
           }
         })
         .catch(error => {
           console.error(error);
         });
-      this.props.navigation.navigate('Duyurular');
+      this.props.navigation.navigate('Akademisyen');
     } else {
       Alert.alert('Bildirim başlığı veya bildirim içeriği boş geçilemez');
     }
@@ -111,6 +105,50 @@ export default class componentName extends Component {
         console.error(error);
       });
   };
+
+  NotificationDetails = async () => {
+    await fetch('http://bihaber.ankara.edu.tr/api/NotificationDetails', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        giden_bildirim_id: this.state.gelen_bildirim_id,
+      }),
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({bildirim_detay: responseJson});
+        this.setState({
+          baslik: this.state.bildirim_detay[0].Duyuru_baslik,
+          icerik: this.state.bildirim_detay[0].Duyuru_icerik,
+          ders_id: this.state.bildirim_detay[0].Ders_id,
+          ders_kodu: this.state.bildirim_detay[0].Ders_kodu,
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+  DeletePreviousNotification = async () => {
+    await fetch('http://bihaber.ankara.edu.tr/api/DeletePreviousNotification', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        giden_bildirim_id: this.state.gelen_bildirim_id,
+      }),
+    })
+      .then(response => response.json())
+      .then(responseJson => {})
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
   // formdan gelen verileri state'de depoluyoruz.
   handleNotificationTitleChange = title => {
     this.setState({baslik: title});
@@ -127,7 +165,7 @@ export default class componentName extends Component {
         <View style={styles.HeaderContainer}>
           <TouchableOpacity
             onPress={() => {
-              this.props.navigation.navigate('Duyurular');
+              this.props.navigation.navigate('Akademisyen');
             }}>
             <View style={styles.backIconContainer}>
               <Image
@@ -144,7 +182,9 @@ export default class componentName extends Component {
               alignItems: 'center',
               height: this.state.height * 0.08,
             }}>
-            <Text style={styles.HeaderText}>Bildirim Gönder</Text>
+            <Text style={styles.HeaderText}>
+              Bildirim Düzenle ve Tekrar Gönder
+            </Text>
           </View>
           <View style={styles.backIconContainer} />
         </View>
@@ -165,10 +205,8 @@ export default class componentName extends Component {
             />
             <View style={styles.inputContainer}>
               <TextInput
-                placeholder="Bildirim Başlık"
                 onSubmitEditing={() => this.icerikInput.focus()}
                 onChangeText={this.handleNotificationTitleChange}
-                placeholderTextColor="#DDDDE6"
                 value={this.state.baslik}
                 style={styles.baslikStyle}
                 autoCapitalize="none"
@@ -182,8 +220,6 @@ export default class componentName extends Component {
                 underlineColorAndroid="transparent"
                 ref={input => (this.icerikInput = input)}
                 value={this.state.icerik}
-                placeholder="Bildirim İçerik"
-                placeholderTextColor="#DDDDE6"
                 style={styles.icerikStyle}
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -191,32 +227,21 @@ export default class componentName extends Component {
               />
             </View>
 
-            {/*//Ders Kodu seçmek için DropDownList*/}
-
-            <View style={styles.PickerContainer}>
-              <View style={styles.ders_kodu}>
-                <Picker
-                  mode="dropdown"
-                  onValueChange={(valuex, index) =>
-                    this.handleNotificationLessonCodeChange(valuex, index)
-                  }
-                  selectedValue={this.state.ders_kodu}>
-                  {this.state.my_lessons_arr.map((item, key) => (
-                    <Picker.Item
-                      label={item.Ders_kodu}
-                      value={item.Ders_id}
-                      key={key}
-                      color="black"
-                    />
-                  ))}
-                </Picker>
-              </View>
+            <View style={styles.inputContainer}>
+              <TextInput
+                value={this.state.ders_kodu}
+                style={styles.ders_kodu_Style}
+                autoCapitalize="none"
+                autoCorrect={false}
+                autoFocus={true}
+                editable={false}
+              />
             </View>
 
             <TouchableOpacity
               onPress={() => this.PostNotification()}
               style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Gönder</Text>
+              <Text style={styles.buttonText}>Düzenle ve Tekrar Gönder</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -280,6 +305,11 @@ const styles = StyleSheet.create({
   },
   baslikStyle: {
     flex: 1,
+  },
+  ders_kodu_Style: {
+    flex: 1,
+    color: 'black',
+    textAlign: 'center',
   },
   icerikStyle: {
     flex: 1,

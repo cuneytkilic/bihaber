@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
   View,
@@ -6,6 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  Button,
+  Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 class Akademisyen extends Component {
@@ -15,6 +18,9 @@ class Akademisyen extends Component {
     this.state = {
       tum_duyurular: [],
       akademisyen_id: this.props.navigation.state.params.passedAkademisyen_id,
+      show: false,
+      showDelete: false,
+      silinecek_duyuru_id: null,
     };
   }
   FetchAllNotifications = async () => {
@@ -44,7 +50,10 @@ class Akademisyen extends Component {
     this.FetchAllNotifications();
     //});
   }
-
+  deletePopup = () => {
+    this.DeleteNotification(this.state.silinecek_duyuru_id);
+    this.setState({showDelete: false});
+  };
   BildirimEklemeSayfasinaYonlendir = () => {
     //Alert.alert(JSON.stringify(this.state.akademisyen_id));
     var gonderilen_akademisyen_id = this.state.akademisyen_id;
@@ -54,7 +63,16 @@ class Akademisyen extends Component {
     /*this.props.navigation.navigate('AkademisyenNotifPage');*/
     this.setState({didUpdate: true});
   };
-
+  cikis = () => {
+    this.setState({show: false});
+    this.props.navigation.navigate('Home');
+  };
+  // DÜZENLE butonuna tıklandığında...
+  UpdateNotification = async gelen_bildirim_id => {
+    this.props.navigation.navigate('UpdateNotificationAkademisyenPage', {
+      gelen_bildirim_id,
+    });
+  };
   // Sil butonuna tıklandığında...
   DeleteNotification = async gelen_bildirim_id => {
     await fetch('http://bihaber.ankara.edu.tr/api/DeleteNotification', {
@@ -77,12 +95,12 @@ class Akademisyen extends Component {
         <View ref={this.textRef} style={styles.HeaderContainer}>
           <TouchableOpacity
             onPress={() => {
-              this.props.navigation.navigate('Home');
+              this.setState({show: true});
             }}>
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../images/left-arrow.png')}
+                source={require('../../assets/images/exit.png')}
               />
             </View>
           </TouchableOpacity>
@@ -105,17 +123,91 @@ class Akademisyen extends Component {
             //Örneğin tablomuzda 5 tane kayıt(satır) var ise renderItem fonksiyonu 5 kere çağrılır.
             renderItem={({item}) => (
               <View style={styles.dersContainer}>
+                {/*DÜZENLE butonu*/}
+                <TouchableOpacity
+                  style={styles.dersDelete}
+                  onPress={() => this.UpdateNotification(item.Duyuru_id)}>
+                  <Icon name="edit" size={20} />
+                </TouchableOpacity>
                 {/*SİL butonu*/}
                 <TouchableOpacity
                   style={styles.dersDelete}
-                  onPress={() => this.DeleteNotification(item.Duyuru_id)}>
+                  onPress={() =>
+                    this.setState({
+                      silinecek_duyuru_id: item.Duyuru_id,
+                      showDelete: true,
+                    })
+                  }>
                   <Icon name="trash" size={20} />
                 </TouchableOpacity>
-                <View style={styles.dersDelete} />
                 <Text style={styles.dersText}>{item.Duyuru_baslik}</Text>
               </View>
             )}
           />
+
+          {/*Silmek için popup uyarısı*/}
+          <Modal transparent={true} visible={this.state.showDelete}>
+            <View style={{backgroundColor: '#000000aa', flex: 1}}>
+              <View
+                style={{
+                  backgroundColor: '#ffffff',
+                  margin: 20,
+                  marginTop: 200,
+                  marginBottom: 200,
+                  padding: 40,
+                  borderRadius: 5,
+                  flex: 1,
+                }}>
+                <Text>Silmek istediğinize emin misiniz?</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    margin: 30,
+                    justifyContent: 'space-between',
+                  }}>
+                  <Button title="EVET" onPress={() => this.deletePopup()} />
+                  <Button
+                    title="HAYIR"
+                    onPress={() => {
+                      this.setState({showDelete: false});
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+          {/*Çıkış için popup ekranı */}
+          <Modal transparent={true} visible={this.state.show}>
+            <View style={{backgroundColor: '#000000aa', flex: 1}}>
+              <View
+                style={{
+                  backgroundColor: '#ffffff',
+                  margin: 20,
+                  marginTop: 200,
+                  marginBottom: 200,
+                  padding: 40,
+                  borderRadius: 5,
+                  flex: 1,
+                }}>
+                <Text>Çıkış yapmak istediğinize emin misiniz?</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    margin: 30,
+                    justifyContent: 'space-between',
+                  }}>
+                  <Button title="EVET" onPress={() => this.cikis()} />
+                  <Button
+                    title="HAYIR"
+                    onPress={() => {
+                      this.setState({show: false});
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </Modal>
         </View>
       </View>
     );

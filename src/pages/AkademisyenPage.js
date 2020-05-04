@@ -9,6 +9,7 @@ import {
   Image,
   Button,
   Modal,
+  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 class Duyurular extends Component {
@@ -68,7 +69,7 @@ class Duyurular extends Component {
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../images/left-arrow.png')}
+                source={require('../../assets/images/left_arrow.png')}
               />
             </View>
           </TouchableOpacity>
@@ -98,6 +99,16 @@ class Duyurular extends Component {
             //Örneğin tablomuzda 5 tane kayıt(satır) var ise renderItem fonksiyonu 5 kere çağrılır.
             renderItem={({item}) => (
               <View style={styles.dersContainer}>
+                {/*DÜZENLE butonu*/}
+                <TouchableOpacity
+                  style={styles.dersDelete}
+                  onPress={() =>
+                    this.props.navigation.navigate('UpdateAkademisyen', {
+                      gonderilen_akademisyen_id: item.Yonetim_id,
+                    })
+                  }>
+                  <Icon name="edit" size={20} />
+                </TouchableOpacity>
                 {/*SİL butonu*/}
                 <TouchableOpacity
                   style={styles.dersDelete}
@@ -110,7 +121,6 @@ class Duyurular extends Component {
                   }}>
                   <Icon name="trash" size={20} />
                 </TouchableOpacity>
-                <View style={styles.dersDelete} />
                 <Text style={styles.dersText}>{item.AdSoyad}</Text>
               </View>
             )}

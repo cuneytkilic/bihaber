@@ -81,7 +81,7 @@ class Dersler extends Component {
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../images/left-arrow.png')}
+                source={require('../../assets/images/left_arrow.png')}
               />
             </View>
           </TouchableOpacity>

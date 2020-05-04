@@ -31,7 +31,6 @@ export default class UpdateNotification extends Component {
 
   componentDidMount = async () => {
     this.NotificationDetails();
-    this.DeletePreviousNotification();
   };
 
   PostNotification = async () => {
@@ -54,6 +53,7 @@ export default class UpdateNotification extends Component {
               this.SendNotification(item.Token_id);
             });
             this.SaveNotification();
+            this.DeletePreviousNotification();
           }
         })
         .catch(error => {
@@ -170,7 +170,7 @@ export default class UpdateNotification extends Component {
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../images/left-arrow.png')}
+                source={require('../../assets/images/left_arrow.png')}
               />
             </View>
           </TouchableOpacity>
@@ -201,7 +201,7 @@ export default class UpdateNotification extends Component {
             }}>
             <Image
               style={styles.imageStyle}
-              source={require('../images/megaphone.png')}
+              source={require('../../assets/images/megaphone.png')}
             />
             <View style={styles.inputContainer}>
               <TextInput

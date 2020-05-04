@@ -58,7 +58,7 @@ export default class AktfiDonem extends Component {
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../images/left-arrow.png')}
+                source={require('../../assets/images/left_arrow.png')}
               />
             </View>
           </TouchableOpacity>
@@ -86,7 +86,7 @@ export default class AktfiDonem extends Component {
             }}>
             <Image
               style={styles.imageStyle}
-              source={require('../images/iliskilendirme.png')}
+              source={require('../../assets/images/iliskilendirme.png')}
             />
 
             {/*//Aktif Dönemi seçmek için DropDownList*/}

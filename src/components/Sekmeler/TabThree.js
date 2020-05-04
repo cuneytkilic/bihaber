@@ -9,7 +9,7 @@ export default class TabThree extends Component {
     title: 'Tüm Dersler',
     tabBarIcon: ({tintColor}) => (
       <Image
-        source={require('../../images/books-icon.png')}
+        source={require('../../../assets/images/books_icon.png')}
         style={{width: 25, height: 25}}
       />
     ),

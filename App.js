@@ -18,7 +18,9 @@ import AddAkademisyen from './src/pages/AddAkademisyen';
 import Akademisyen from './src/pages/Akademisyen';
 import Hakkinda from './src/pages/Hakkinda';
 import AktifDonem from './src/pages/AktifDonem';
+import UpdateAkademisyen from './src/pages/UpdateAkademisyen';
 import UpdateNotificationPage from './src/pages/UpdateNotificationPage';
+import UpdateNotificationAkademisyenPage from './src/pages/UpdateNotificationAkademisyenPage';
 import firebase from 'react-native-firebase';
 import PushNotification from 'react-native-push-notification';
 
@@ -193,7 +195,7 @@ class MainPage extends Component {
           <View style={styles.headerLeftContainer}>
             <Image
               style={{width: 45, height: 45}}
-              source={require('./src/images/logo.png')}
+              source={require('./assets/images/logo.png')}
             />
             <Text style={{paddingLeft: 5, color: 'white', fontSize: 20}}>
               Bi'Haber
@@ -206,7 +208,7 @@ class MainPage extends Component {
                 style={styles.login_icon_container}
                 onPress={onPress}>
                 <Image
-                  source={require('./src/images/login.png')}
+                  source={require('./assets/images/login.png')}
                   style={styles.HeaderImage}
                 />
               </TouchableOpacity>
@@ -244,7 +246,7 @@ class MainPage extends Component {
                 <View style={styles.logoContainer}>
                   <Image
                     style={styles.logo}
-                    source={require('./src/images/logo.png')}
+                    source={require('./assets/images/logo.png')}
                   />
                 </View>
                 <View style={styles.formContainer}>
@@ -309,6 +311,8 @@ const AppNavigator = createStackNavigator(
     Hakkinda: Hakkinda,
     AktifDonem: AktifDonem,
     UpdateNotificationPage: UpdateNotificationPage,
+    UpdateNotificationAkademisyenPage: UpdateNotificationAkademisyenPage,
+    UpdateAkademisyen: UpdateAkademisyen,
   },
   {
     initialRouteName: 'Home',

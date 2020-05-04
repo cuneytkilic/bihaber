@@ -111,7 +111,7 @@ export default class AddLesson extends Component {
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../images/left-arrow.png')}
+                source={require('../../assets/images/left_arrow.png')}
               />
             </View>
           </TouchableOpacity>
@@ -139,7 +139,7 @@ export default class AddLesson extends Component {
             }}>
             <Image
               style={styles.imageStyle}
-              source={require('../images/research-icon.png')}
+              source={require('../../assets/images/research_icon.png')}
             />
             <View style={styles.inputContainer}>
               <TextInput

@@ -18,7 +18,7 @@ export default class tabTwo extends Component {
     title: 'Derslerim',
     tabBarIcon: ({tintColor}) => (
       <Image
-        source={require('../../images/contacts-book-icon.png')}
+        source={require('../../../assets/images/contacts_book_icon.png')}
         style={{width: 20, height: 20}}
       />
     ),
@@ -144,7 +144,7 @@ export default class tabTwo extends Component {
                   borderBottomWidth: 1,
                   borderBottomColor: '#B6B1B1',
                 }}>
-                <View style={{width: '24%'}}>
+                <View style={{width: '26%'}}>
                   <Text style={styles.yazi_tipi}>{item.Ders_kodu} </Text>
                 </View>
                 <Text style={styles.ders_adi_yazi_tipi}>{item.Ders_adi}</Text>
@@ -155,7 +155,7 @@ export default class tabTwo extends Component {
                   onPress={() => this.info(item.Ders_id)}>
                   <Image
                     style={styles.resim_sytle}
-                    source={require('../../images/information_icon.png')}
+                    source={require('../../../assets/images/information_icon.png')}
                   />
                 </TouchableOpacity>
               </View>
@@ -181,7 +181,7 @@ export default class tabTwo extends Component {
               <View style={styles.ust_bolge}>
                 <Image
                   style={styles.icon_bolgesi}
-                  source={require('../../images/logo.png')}
+                  source={require('../../../assets/images/logo.png')}
                 />
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={styles.baslik_bolgesi}>

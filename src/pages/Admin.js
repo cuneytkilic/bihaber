@@ -18,27 +18,27 @@ class Admin extends Component {
         {
           id: 1,
           title: 'Ders Ekle/Çıkar/Güncelle',
-          image: require('../images/research-icon.png'),
+          image: require('../../assets/images/research_icon.png'),
         },
         {
           id: 2,
           title: 'Akademisyen Ekle/Çıkar',
-          image: require('../images/user.png'),
+          image: require('../../assets/images/user.png'),
         },
         {
           id: 3,
           title: 'Duyuru Ekle/Sil',
-          image: require('../images/megaphone.png'),
+          image: require('../../assets/images/megaphone.png'),
         },
         {
           id: 4,
           title: 'Ders-Akademisyen İlişkilendirme',
-          image: require('../images/iliskilendirme.png'),
+          image: require('../../assets/images/iliskilendirme.png'),
         },
         {
           id: 5,
           title: 'Aktif Dönem Değiştir',
-          image: require('../images/exchange.png'),
+          image: require('../../assets/images/exchange.png'),
         },
       ],
     };

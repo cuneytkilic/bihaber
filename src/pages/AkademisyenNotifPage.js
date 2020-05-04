@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
   StyleSheet,
@@ -150,12 +151,12 @@ class AkademisyenNotifPage extends Component {
         <View style={styles.HeaderContainer}>
           <TouchableOpacity
             onPress={() => {
-              this.props.navigation.navigate('Home');
+              this.props.navigation.navigate('Akademisyen');
             }}>
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../images/left-arrow.png')}
+                source={require('../../assets/images/left_arrow.png')}
               />
             </View>
           </TouchableOpacity>
@@ -171,6 +172,7 @@ class AkademisyenNotifPage extends Component {
           </View>
           <View style={styles.backIconContainer} />
         </View>
+
         <ScrollView style={{width: '100%'}}>
           <View
             style={{
@@ -183,7 +185,7 @@ class AkademisyenNotifPage extends Component {
             }}>
             <Image
               style={styles.imageStyle}
-              source={require('../images/megaphone.png')}
+              source={require('../../assets/images/megaphone.png')}
             />
             <View style={styles.inputContainer}>
               <TextInput
@@ -192,21 +194,24 @@ class AkademisyenNotifPage extends Component {
                 onChangeText={this.handleNotificationTitleChange}
                 placeholderTextColor="#DDDDE6"
                 value={this.state.baslik}
-                style={styles.inputStyle}
+                style={styles.baslikStyle}
                 autoCapitalize="none"
                 autoCorrect={false}
+                autoFocus={true}
               />
             </View>
             <View style={styles.inputContainer}>
               <TextInput
                 onChangeText={this.handleNotificationContentChange}
+                underlineColorAndroid="transparent"
                 ref={input => (this.icerikInput = input)}
                 value={this.state.icerik}
                 placeholder="Bildirim İçerik"
                 placeholderTextColor="#DDDDE6"
-                style={styles.inputStyle}
+                style={styles.icerikStyle}
                 autoCapitalize="none"
                 autoCorrect={false}
+                multiline
               />
             </View>
 
@@ -293,13 +298,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     marginTop: 10,
-    height: 40,
     width: '60%',
     flexDirection: 'row',
     alignItems: 'center',
   },
-  inputStyle: {
+  baslikStyle: {
     flex: 1,
+  },
+  icerikStyle: {
+    flex: 1,
+    height: 100,
   },
   container: {
     backgroundColor: '#DDDDE6',

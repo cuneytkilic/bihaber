@@ -273,7 +273,7 @@ class MainPage extends Component {
             heading={
               <TabHeading>
                 <Image
-                  source={require('./src/images/bell.png')}
+                  source={require('./assets/images/bell.png')}
                   style={{width: 25, height: 25}}
                 />
                 <Text>Duyurular</Text>
@@ -286,7 +286,7 @@ class MainPage extends Component {
             heading={
               <TabHeading>
                 <Image
-                  source={require('./src/images/contacts-book-icon.png')}
+                  source={require('./assets/images/contacts_book_icon.png')}
                   style={{width: 25, height: 25}}
                 />
                 <Text>Derslerim</Text>
@@ -299,7 +299,7 @@ class MainPage extends Component {
             heading={
               <TabHeading>
                 <Image
-                  source={require('./src/images/books-icon.png')}
+                  source={require('./assets/images/books_icon.png')}
                   style={{width: 25, height: 25}}
                 />
                 <Text>Tüm Dersler</Text>

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
   View,
@@ -13,17 +14,23 @@ import {sha256} from 'react-native-sha256';
 import {Text} from 'native-base';
 import {TextInput} from 'react-native-gesture-handler';
 
-export default class AddLesson extends Component {
+export default class UpdateAkademisyen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       kullanici_adi: '',
       sifre: '',
-      adSoyad: '1',
+      adSoyad: '',
       height: Dimensions.get('window').height,
       width: Dimensions.get('window').width,
       password_hash: '',
+      akademisyen_details: [],
+      akademisyen_id: this.props.navigation.state.params
+        .gonderilen_akademisyen_id,
     };
+  }
+  componentDidMount() {
+    this.AkademisyenGetir();
   }
   handleChangeKullaniciAdi = value => {
     this.setState({kullanici_adi: value});
@@ -34,8 +41,33 @@ export default class AddLesson extends Component {
   handleChangeAdSoyad = value => {
     this.setState({adSoyad: value});
   };
-  AkademisyenKaydet = async x => {
-    await fetch('http://bihaber.ankara.edu.tr/api/AkademisyenEkle', {
+  AkademisyenGetir = async () => {
+    await fetch('http://bihaber.ankara.edu.tr/api/AkademisyenGetir', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        server_akademisyen_id: this.state.akademisyen_id,
+      }),
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({akademisyen_details: responseJson});
+        this.setState({
+          kullanici_adi: this.state.akademisyen_details[0].Kullanici_Ad,
+          sifre: this.state.akademisyen_details[0].Sifre,
+          adSoyad: this.state.akademisyen_details[0].AdSoyad,
+        });
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  };
+
+  AkademisyenKaydet = async () => {
+    await fetch('http://bihaber.ankara.edu.tr/api/AkademisyenGuncelle', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -43,8 +75,8 @@ export default class AddLesson extends Component {
       },
       body: JSON.stringify({
         gonderilen_kullanici_adi: this.state.kullanici_adi,
-        gonderilen_sifre: x,
         gonderilen_adSoyad: this.state.adSoyad,
+        gonderilen_yonetim_id: this.state.akademisyen_id,
       }),
     })
       .then(response => response.json())
@@ -52,18 +84,12 @@ export default class AddLesson extends Component {
       .catch(error => {
         console.error(error);
       });
-    Alert.alert('Akademisyen başarıyla eklendi.');
+    Alert.alert('Akademisyen başarıyla güncellendi.');
     this.props.navigation.navigate('AkademisyenPage');
   };
-  AkademisyenEkle = async () => {
-    if (
-      this.state.kullanici_adi !== '' &&
-      this.state.sifre !== '' &&
-      this.state.adSoyad !== ''
-    ) {
-      sha256(this.state.sifre).then(hashed_value => {
-        this.AkademisyenKaydet(hashed_value);
-      });
+  AkademisyenGuncelle = async () => {
+    if (this.state.kullanici_adi !== '' && this.state.adSoyad !== '') {
+      this.AkademisyenKaydet();
     } else {
       Alert.alert('Tüm alanların girilmesi zorunludur.');
     }
@@ -92,7 +118,7 @@ export default class AddLesson extends Component {
               alignItems: 'center',
               height: this.state.height * 0.08,
             }}>
-            <Text style={styles.HeaderText}>Akademisyen Ekle</Text>
+            <Text style={styles.HeaderText}>Akademisyen Düzenle</Text>
           </View>
           <View style={styles.backIconContainer} />
         </View>
@@ -112,6 +138,18 @@ export default class AddLesson extends Component {
             />
             <View style={styles.inputContainer}>
               <TextInput
+                ref={input => (this.adSoyadInput = input)}
+                onChangeText={this.handleChangeAdSoyad}
+                placeholder="Ad Soyad"
+                value={this.state.adSoyad}
+                placeholderTextColor="#DDDDE6"
+                style={styles.inputStyle}
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TextInput
                 onSubmitEditing={() => this.sifreInput.focus()}
                 onChangeText={this.handleChangeKullaniciAdi}
                 placeholder="Kullanıcı Adı"
@@ -129,6 +167,7 @@ export default class AddLesson extends Component {
                 ref={input => (this.sifreInput = input)}
                 placeholder="Şifre"
                 secureTextEntry
+                editable={false}
                 value={this.state.sifre}
                 placeholderTextColor="#DDDDE6"
                 style={styles.inputStyle}
@@ -136,22 +175,10 @@ export default class AddLesson extends Component {
                 autoCorrect={false}
               />
             </View>
-            <View style={styles.inputContainer}>
-              <TextInput
-                ref={input => (this.adSoyadInput = input)}
-                onChangeText={this.handleChangeAdSoyad}
-                placeholder="Ad Soyad"
-                value={this.state.akademisyen}
-                placeholderTextColor="#DDDDE6"
-                style={styles.inputStyle}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
             <TouchableOpacity
-              onPress={() => this.AkademisyenEkle(this.state.kullanici_adi)}
+              onPress={() => this.AkademisyenGuncelle()}
               style={styles.buttonContainer}>
-              <Text style={styles.buttonText}>Ekle</Text>
+              <Text style={styles.buttonText}>Kaydet</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -174,6 +201,14 @@ const styles = StyleSheet.create({
     width: '46%',
     borderRadius: 5,
     marginRight: '2%',
+    justifyContent: 'center',
+    paddingLeft: 5,
+  },
+  donem: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: '50%',
+    borderRadius: 5,
+    marginLeft: '2%',
     justifyContent: 'center',
     paddingLeft: 5,
   },
