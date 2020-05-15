@@ -11,34 +11,45 @@ import {
   Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-class Akademisyen extends Component {
+class deneme extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
       tum_duyurular: [],
-      akademisyen_id: this.props.navigation.state.params.passedAkademisyen_id,
+      akademisyen_id: 1,
       show: false,
       showDelete: false,
+      silinecek_duyuru_id: null,
       waitingDelete: false,
       loading: false,
-      silinecek_duyuru_id: null,
     };
   }
+
+  componentDidMount() {
+    this._subscribe = this.props.navigation.addListener('didFocus', () => {
+      this.setState({loading: true});
+      setTimeout(() => {
+        this.setState({loading: false});
+        this.FetchAllNotifications();
+      }, 5000);
+    });
+  }
+  deletePopup = () => {
+    this.setState({showDelete: false, waitingDelete: true});
+    setTimeout(() => {
+      this.DeleteNotification(this.state.silinecek_duyuru_id);
+      this.setState({waitingDelete: false});
+    }, 5000);
+  };
   FetchAllNotifications = async () => {
-    await fetch(
-      'http://bihaber.ankara.edu.tr/api/GetAllNotificationsForAkademisyen',
-      {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          giden_akademisyen_id: this.state.akademisyen_id,
-        }),
+    await fetch('http://bihaber.ankara.edu.tr/api/GetAllNotifications', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
       },
-    )
+    })
       .then(response => response.json())
       .then(responseJson => {
         this.setState({tum_duyurular: responseJson});
@@ -47,39 +58,10 @@ class Akademisyen extends Component {
         console.error(error);
       });
   };
-  componentDidMount() {
-    this._subscribe = this.props.navigation.addListener('didFocus', () => {
-      this.setState({loading: true});
-      setTimeout(() => {
-        this.setState({loading: false});
-        this.FetchAllNotifications();
-      }, 2000);
-    });
-  }
-  deletePopup = () => {
-    this.setState({showDelete: false, waitingDelete: true});
-    setTimeout(() => {
-      this.setState({waitingDelete: false});
-      this.DeleteNotification(this.state.silinecek_duyuru_id);
-    }, 2000);
-  };
   BildirimEklemeSayfasinaYonlendir = () => {
-    //Alert.alert(JSON.stringify(this.state.akademisyen_id));
-    var gonderilen_akademisyen_id = this.state.akademisyen_id;
-    this.props.navigation.navigate('AkademisyenNotifPage', {
+    var gonderilen_akademisyen_id = this.state.akademisyen_id; //
+    this.props.navigation.navigate('NotificationAddPage', {
       gonderilen_akademisyen_id,
-    });
-    /*this.props.navigation.navigate('AkademisyenNotifPage');*/
-    this.setState({didUpdate: true});
-  };
-  cikis = () => {
-    this.setState({show: false});
-    this.props.navigation.navigate('Home');
-  };
-  // DÜZENLE butonuna tıklandığında...
-  UpdateNotification = async gelen_bildirim_id => {
-    this.props.navigation.navigate('UpdateNotificationAkademisyenPage', {
-      gelen_bildirim_id,
     });
   };
   // Sil butonuna tıklandığında...
@@ -96,6 +78,17 @@ class Akademisyen extends Component {
     });
     this.FetchAllNotifications();
   };
+  // DÜZENLE butonuna tıklandığında...
+  UpdateNotification = async gelen_bildirim_id => {
+    this.props.navigation.navigate('UpdateNotificationPage', {
+      gelen_bildirim_id,
+    });
+  };
+
+  cikis = () => {
+    this.setState({show: false});
+    this.props.navigation.navigate('Home');
+  };
 
   render() {
     // if koşulu içine state değişkenini değiştirilecek.
@@ -104,17 +97,17 @@ class Akademisyen extends Component {
         <View ref={this.textRef} style={styles.HeaderContainer}>
           <TouchableOpacity
             onPress={() => {
-              this.setState({show: true});
+              this.props.navigation.navigate('AdminPage');
             }}>
             <View style={styles.backIconContainer}>
               <Image
                 style={styles.backIcon}
-                source={require('../../assets/images/exit.png')}
+                source={require('../../assets/images/left_arrow.png')}
               />
             </View>
           </TouchableOpacity>
           <View style={styles.PageHeaderContainer}>
-            <Text style={styles.HeaderText}>Akademisyen Tüm Bildirimler</Text>
+            <Text style={styles.HeaderText}>Tüm Duyurular</Text>
           </View>
           {/* Sağ Üstteki Bildirim ekleme butonu */}
           <TouchableOpacity onPress={this.BildirimEklemeSayfasinaYonlendir}>
@@ -153,64 +146,7 @@ class Akademisyen extends Component {
               </View>
             )}
           />
-          {/*BEKLETMEK için popup uyarısı*/}
-          <Modal transparent={true} visible={this.state.waitingDelete}>
-            <View style={{backgroundColor: '#000000aa', flex: 1}}>
-              <View
-                style={{
-                  backgroundColor: '#ffffff',
-                  margin: 20,
-                  marginTop: 200,
-                  marginBottom: 200,
-                  padding: 40,
-                  borderRadius: 5,
-                  flex: 1,
-                  alignItems: 'center',
-                }}>
-                <Text>Duyuru siliniyor, lütfen bekleyiniz...</Text>
-                <Image
-                  source={require('../../assets/images/spinner.gif')}
-                  style={{width: 100, height: 100}}
-                />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    margin: 30,
-                    justifyContent: 'space-between',
-                  }}
-                />
-              </View>
-            </View>
-          </Modal>
-          {/*YÜKLENİYOR için popup uyarısı*/}
-          <Modal transparent={true} visible={this.state.loading}>
-            <View style={{backgroundColor: '#000000aa', flex: 1}}>
-              <View
-                style={{
-                  backgroundColor: '#ffffff',
-                  margin: 20,
-                  marginTop: 200,
-                  marginBottom: 200,
-                  padding: 40,
-                  borderRadius: 5,
-                  flex: 1,
-                  alignItems: 'center',
-                }}>
-                <Text>Duyurular yükleniyor, lütfen bekleyiniz...</Text>
-                <Image
-                  source={require('../../assets/images/spinner.gif')}
-                  style={{width: 100, height: 100}}
-                />
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    margin: 30,
-                    justifyContent: 'space-between',
-                  }}
-                />
-              </View>
-            </View>
-          </Modal>
+
           {/*Silmek için popup uyarısı*/}
           <Modal transparent={true} visible={this.state.showDelete}>
             <View style={{backgroundColor: '#000000aa', flex: 1}}>
@@ -271,6 +207,64 @@ class Akademisyen extends Component {
                     }}
                   />
                 </View>
+              </View>
+            </View>
+          </Modal>
+          {/*YÜKLENİYOR için popup uyarısı*/}
+          <Modal transparent={true} visible={this.state.loading}>
+            <View style={{backgroundColor: '#000000aa', flex: 1}}>
+              <View
+                style={{
+                  backgroundColor: '#ffffff',
+                  margin: 20,
+                  marginTop: 200,
+                  marginBottom: 200,
+                  padding: 40,
+                  borderRadius: 5,
+                  flex: 1,
+                  alignItems: 'center',
+                }}>
+                <Text>Duyurular yükleniyor...</Text>
+                <Image
+                  source={require('../../assets/images/spinner.gif')}
+                  style={{width: 100, height: 100}}
+                />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    margin: 30,
+                    justifyContent: 'space-between',
+                  }}
+                />
+              </View>
+            </View>
+          </Modal>
+          {/*BEKLETMEK için popup uyarısı*/}
+          <Modal transparent={true} visible={this.state.waitingDelete}>
+            <View style={{backgroundColor: '#000000aa', flex: 1}}>
+              <View
+                style={{
+                  backgroundColor: '#ffffff',
+                  margin: 20,
+                  marginTop: 200,
+                  marginBottom: 200,
+                  padding: 40,
+                  borderRadius: 5,
+                  flex: 1,
+                  alignItems: 'center',
+                }}>
+                <Text>Duyuru siliniyor, lütfen bekleyiniz...</Text>
+                <Image
+                  source={require('../../assets/images/spinner.gif')}
+                  style={{width: 100, height: 100}}
+                />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    margin: 30,
+                    justifyContent: 'space-between',
+                  }}
+                />
               </View>
             </View>
           </Modal>
@@ -352,4 +346,4 @@ const styles = StyleSheet.create({
     height: 30,
   },
 });
-export default Akademisyen;
+export default deneme;

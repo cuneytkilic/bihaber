@@ -91,7 +91,7 @@ class MainPage extends Component {
         giden_token: token,
       }),
     })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(responseJson => {})
       .catch(error => {
         console.error(error);
@@ -406,6 +406,7 @@ const styles = StyleSheet.create({
   },
   inputStyle: {
     flex: 1,
+    fontSize: 18,
   },
   iconStyle: {
     width: 20,

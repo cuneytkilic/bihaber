@@ -9,7 +9,7 @@ import AdminPage from './src/pages/Admin';
 import AddLesson from './src/pages/AddLesson';
 import UpdateLesson from './src/pages/UpdateLesson';
 import Dersler from './src/pages/Dersler';
-import Duyurular from './src/pages/Duyurular';
+import Duyurular from './src/pages/AdminDuyurular';
 import NotificationAddPage from './src/pages/NotificationAddPage';
 import AkademisyenPage from './src/pages/AkademisyenPage';
 import AkademisyenNotifPage from './src/pages/AkademisyenNotifPage';
@@ -62,6 +62,9 @@ class MainPage extends Component {
   constructor(props) {
     super(props);
 
+    // Creating Global Variable.
+    global.didUpdate = true; // güncelleme kapalı
+    global.admin_duyuru_sayisi = 0;
     this.state = {
       my_res_arr: [],
       user_name: '',
@@ -112,7 +115,7 @@ class MainPage extends Component {
         giden_token: token,
       }),
     })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(responseJson => {})
       .catch(error => {
         console.error(error);

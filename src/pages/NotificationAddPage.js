@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {Picker} from 'native-base';
 import {
@@ -8,6 +9,7 @@ import {
   Text,
   TouchableOpacity,
   Dimensions,
+  Modal,
 } from 'react-native';
 import {TextInput, ScrollView} from 'react-native-gesture-handler';
 
@@ -23,24 +25,36 @@ export default class componentName extends Component {
       my_lessons_arr: [],
       tokens_arr: [],
       bildirim_durum: '',
+      gelen_token: '',
       height: Dimensions.get('window').height,
       width: Dimensions.get('window').width,
+      waitingAdd: false,
     };
   }
-
   FetchAllLessons = async () => {
     //Hocalarla ilişkili olan dersler getiriliyor.
-    const response = await fetch(
-      'http://bihaber.ankara.edu.tr/api/BildirimDersleri',
-    );
-    const lessons = await response.json();
-    this.setState({my_lessons_arr: lessons});
+    await fetch('http://bihaber.ankara.edu.tr/api/BildirimDersleri', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({my_lessons_arr: responseJson});
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
+
   componentDidMount = async () => {
     this.FetchAllLessons();
   };
 
   PostNotification = async () => {
+    this.setState({waitingAdd: true});
     if (this.state.baslik !== '' && this.state.icerik !== '') {
       await fetch('http://bihaber.ankara.edu.tr/api/DersiAlanTokenlar', {
         method: 'POST',
@@ -63,10 +77,14 @@ export default class componentName extends Component {
           }
         })
         .catch(error => {
-          console.error(error);
+          console.log(error);
         });
-      this.props.navigation.navigate('Duyurular');
+      setTimeout(() => {
+        this.setState({waitingAdd: false});
+        this.props.navigation.navigate('Duyurular');
+      }, 5000);
     } else {
+      this.setState({waitingAdd: false});
       Alert.alert('Bildirim başlığı veya bildirim içeriği boş geçilemez');
     }
   };
@@ -84,13 +102,33 @@ export default class componentName extends Component {
         giden_ders_kodu: this.state.ders_kodu,
       }),
     })
-      .then(response => response.json())
-      .then(responseJson => {})
+      .then(response => response.text())
+      .then(responseJson => {
+        this.setState({gelen_token: responseJson});
+        if (this.state.gelen_token !== '') {
+          // hatalı token için silme işlemini yapacak requesti oluştur.
+          this.DeleteToken(this.state.gelen_token);
+          this.setState({gelen_token: ''});
+        }
+      })
       .catch(error => {
         console.error(error);
       });
   };
-
+  DeleteToken = async gelen_token_id => {
+    await fetch('http://bihaber.ankara.edu.tr/api/DeleteToken', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        silinecek_token_id: gelen_token_id,
+      }),
+    })
+      .then(response => response.text())
+      .then(responseJson => {});
+  };
   SaveNotification = async () => {
     await fetch('http://bihaber.ankara.edu.tr/api/BildirimKaydet', {
       method: 'POST',
@@ -105,7 +143,7 @@ export default class componentName extends Component {
         giden_ders_kodu: this.state.ders_kodu,
       }),
     })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(responseJson => {})
       .catch(error => {
         console.error(error);
@@ -140,15 +178,13 @@ export default class componentName extends Component {
             style={{
               backgroundColor: '#3E53AE',
               justifyContent: 'center',
-              width: this.state.width * 0.75,
+              width: '60%',
               alignItems: 'center',
-              height: this.state.height * 0.08,
             }}>
             <Text style={styles.HeaderText}>Bildirim Gönder</Text>
           </View>
           <View style={styles.backIconContainer} />
         </View>
-
         <ScrollView style={{width: '100%'}}>
           <View
             style={{
@@ -220,6 +256,35 @@ export default class componentName extends Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
+        {/*BEKLETMEK için popup uyarısı*/}
+        <Modal transparent={true} visible={this.state.waitingAdd}>
+          <View style={{backgroundColor: '#000000aa', flex: 1}}>
+            <View
+              style={{
+                backgroundColor: '#ffffff',
+                margin: 20,
+                marginTop: 200,
+                marginBottom: 200,
+                padding: 40,
+                borderRadius: 5,
+                flex: 1,
+                alignItems: 'center',
+              }}>
+              <Text>Duyuru gönderiliyor, lütfen bekleyiniz...</Text>
+              <Image
+                source={require('../../assets/images/spinner.gif')}
+                style={{width: 100, height: 100}}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  margin: 30,
+                  justifyContent: 'space-between',
+                }}
+              />
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -228,8 +293,8 @@ export default class componentName extends Component {
 const styles = StyleSheet.create({
   PickerContainer: {
     backgroundColor: '#DDDDE6',
-    width: '60%',
-    height: 40,
+    width: '70%',
+    height: 50,
     marginTop: 10,
     borderRadius: 5,
     flexDirection: 'row',
@@ -246,27 +311,19 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     padding: 5,
+    fontSize: 18,
   },
   imageStyle: {
     width: 100,
     height: 100,
-  },
-  DropDownContainer: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    width: '60%',
-    height: '8%',
-    marginTop: 10,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    borderRadius: 5,
   },
   buttonContainer: {
     backgroundColor: '#20232a',
     marginBottom: 5,
     marginTop: 40,
     borderRadius: 20,
-    height: 40,
-    width: 200,
+    height: 50,
+    width: '60%',
     justifyContent: 'center',
   },
   inputContainer: {
@@ -274,16 +331,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     marginTop: 10,
-    width: '60%',
+    width: '70%',
     flexDirection: 'row',
     alignItems: 'center',
   },
   baslikStyle: {
     flex: 1,
+    fontSize: 18,
   },
   icerikStyle: {
     flex: 1,
     height: 100,
+    fontSize: 18,
   },
   container: {
     backgroundColor: '#DDDDE6',
@@ -297,24 +356,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     height: 50,
-  },
-  HeaderImage: {
-    width: 40,
-    height: '100%',
-    backgroundColor: 'black',
-  },
-  BodyContainer: {
-    backgroundColor: '#DDDDE6',
     width: '100%',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   backIconContainer: {
     paddingLeft: 10,
     paddingRight: 10,
-    flex: 1,
-    height: '100%',
+    width: '23%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -325,17 +372,5 @@ const styles = StyleSheet.create({
   HeaderText: {
     fontSize: 17,
     color: 'white',
-  },
-  TextContainer: {
-    flexDirection: 'row',
-    height: '4%',
-    marginBottom: 5,
-  },
-  TextInputStyle: {
-    borderBottomWidth: 1,
-    padding: 0,
-  },
-  TextStyle: {
-    width: '40%',
   },
 });

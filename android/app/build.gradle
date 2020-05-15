@@ -196,7 +196,8 @@ dependencies {
     implementation "com.google.firebase:firebase-core:17.2.2"
     implementation "com.google.firebase:firebase-messaging:20.1.0"
     implementation "com.google.firebase:firebase-auth:19.2.0"
-
+implementation 'com.facebook.fresco:fresco:2.0.0'
+implementation 'com.facebook.fresco:animated-gif:2.0.0'
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")

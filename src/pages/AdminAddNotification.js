@@ -1,5 +1,6 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
+import {Picker} from 'native-base';
 import {
   StyleSheet,
   Image,
@@ -8,9 +9,7 @@ import {
   TouchableOpacity,
   Dimensions,
   Alert,
-  Modal,
 } from 'react-native';
-import {Picker} from 'native-base';
 import {TextInput, ScrollView} from 'react-native-gesture-handler';
 
 class AkademisyenNotifPage extends Component {
@@ -25,14 +24,13 @@ class AkademisyenNotifPage extends Component {
       my_lessons_arr: [],
       tokens_arr: [],
       bildirim_durum: '',
-      waitingAdd: false,
       height: Dimensions.get('window').height,
       width: Dimensions.get('window').width,
     };
   }
 
   FetchAllLessonsOfAkademisyen = async akademisyen_id => {
-    await fetch('http://bihaber.ankara.edu.tr/api/LessonsOfAkademisyen', {
+    await fetch('http://bihaber.ankara.edu.tr/api/BildirimDersleri', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -58,7 +56,6 @@ class AkademisyenNotifPage extends Component {
   };
 
   PostNotification = async () => {
-    this.setState({waitingAdd: true});
     if (this.state.baslik !== '' && this.state.icerik !== '') {
       await fetch('http://bihaber.ankara.edu.tr/api/DersiAlanTokenlar', {
         method: 'POST',
@@ -78,19 +75,19 @@ class AkademisyenNotifPage extends Component {
               this.SendNotification(item.Token_id);
             });
             this.SaveNotification();
-          } else {
-            this.SaveNotification(); // dersi seçen kimse yoksa bildirim veritabanına kayıt edilecek.
           }
         })
         .catch(error => {
           console.error(error);
         });
-      setTimeout(() => {
-        this.setState({waitingAdd: false});
-        this.props.navigation.navigate('Akademisyen');
-      }, 2000);
+      /*
+    //dersi alan kullanıcıların tokenlarını cek,asagıdaki sendnotifiction fonksiyoununa for ile gönder
+    this.SendNotification(
+      ' dIy-Sl5SHSU:APA91bGAa47fDVQ0eKNYODyCfk2MBn5BEb64g9B6YhJXGatjVFdYD0oLjbt1-PCCzmOQkSAxME3lzbDsRNWdI7AsytLqRjThayeMv-lQ2a11MspeMfARb6Xc3VfcZWUh5vrLr94TOX1g',
+    );*/
+
+      this.props.navigation.navigate('Akademisyen');
     } else {
-      this.setState({waitingAdd: false});
       Alert.alert('Bildirim başlığı veya bildirim içeriği boş geçilemez.');
     }
   };
@@ -245,35 +242,6 @@ class AkademisyenNotifPage extends Component {
             </TouchableOpacity>
           </View>
         </ScrollView>
-        {/*BEKLETMEK için popup uyarısı*/}
-        <Modal transparent={true} visible={this.state.waitingAdd}>
-          <View style={{backgroundColor: '#000000aa', flex: 1}}>
-            <View
-              style={{
-                backgroundColor: '#ffffff',
-                margin: 20,
-                marginTop: 200,
-                marginBottom: 200,
-                padding: 40,
-                borderRadius: 5,
-                flex: 1,
-                alignItems: 'center',
-              }}>
-              <Text>Duyuru gönderiliyor, lütfen bekleyiniz...</Text>
-              <Image
-                source={require('../../assets/images/spinner.gif')}
-                style={{width: 100, height: 100}}
-              />
-              <View
-                style={{
-                  flexDirection: 'row',
-                  margin: 30,
-                  justifyContent: 'space-between',
-                }}
-              />
-            </View>
-          </View>
-        </Modal>
       </View>
     );
   }
@@ -282,8 +250,8 @@ class AkademisyenNotifPage extends Component {
 const styles = StyleSheet.create({
   PickerContainer: {
     backgroundColor: '#DDDDE6',
-    width: '70%',
-    height: 50,
+    width: '60%',
+    height: 40,
     marginTop: 10,
     borderRadius: 5,
     flexDirection: 'row',
@@ -300,19 +268,27 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     padding: 5,
-    fontSize: 18,
   },
   imageStyle: {
     width: 100,
     height: 100,
+  },
+  DropDownContainer: {
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    width: '60%',
+    height: '8%',
+    marginTop: 10,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    borderRadius: 5,
   },
   buttonContainer: {
     backgroundColor: '#20232a',
     marginBottom: 5,
     marginTop: 40,
     borderRadius: 20,
-    height: 50,
-    width: '60%',
+    height: 40,
+    width: 200,
     justifyContent: 'center',
   },
   inputContainer: {
@@ -320,18 +296,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     marginTop: 10,
-    width: '70%',
+    width: '60%',
     flexDirection: 'row',
     alignItems: 'center',
   },
   baslikStyle: {
     flex: 1,
-    fontSize: 18,
   },
   icerikStyle: {
     flex: 1,
     height: 100,
-    fontSize: 18,
   },
   container: {
     backgroundColor: '#DDDDE6',
@@ -347,6 +321,18 @@ const styles = StyleSheet.create({
     height: 50,
     width: '100%',
   },
+  HeaderImage: {
+    width: 40,
+    height: '100%',
+    backgroundColor: 'black',
+  },
+  BodyContainer: {
+    backgroundColor: '#DDDDE6',
+    width: '100%',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   backIconContainer: {
     paddingLeft: 10,
     paddingRight: 10,
@@ -361,6 +347,18 @@ const styles = StyleSheet.create({
   HeaderText: {
     fontSize: 17,
     color: 'white',
+  },
+  TextContainer: {
+    flexDirection: 'row',
+    height: '4%',
+    marginBottom: 5,
+  },
+  TextInputStyle: {
+    borderBottomWidth: 1,
+    padding: 0,
+  },
+  TextStyle: {
+    width: '40%',
   },
 });
 

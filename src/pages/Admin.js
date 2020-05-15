@@ -17,17 +17,17 @@ class Admin extends Component {
       data: [
         {
           id: 1,
-          title: 'Ders Ekle/Çıkar/Güncelle',
+          title: 'Ders Ekle/Sil/Güncelle',
           image: require('../../assets/images/research_icon.png'),
         },
         {
           id: 2,
-          title: 'Akademisyen Ekle/Çıkar',
+          title: 'Akademisyen Ekle/Sil/Güncelle',
           image: require('../../assets/images/user.png'),
         },
         {
           id: 3,
-          title: 'Duyuru Ekle/Sil',
+          title: 'Duyuru Ekle/Sil/Güncelle',
           image: require('../../assets/images/megaphone.png'),
         },
         {

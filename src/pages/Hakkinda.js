@@ -10,7 +10,7 @@ class Dersler extends Component {
           source={require('../../assets/images/hakkinda_bg.png')}
           style={styles.image}>
           <ScrollView>
-            <Text style={styles.baslik}>BiHaber</Text>
+            <Text style={styles.baslik}>Bi'Haber</Text>
             <Text style={styles.yazi}>
               Bu uygulama Ankara Üniversitesi Bilgisayar Mühendisliği bölümü
               için yapılmıştır.

@@ -9,7 +9,6 @@ import {
   Image,
   Button,
   Modal,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -19,28 +18,37 @@ class Dersler extends Component {
 
     this.state = {
       my_lessons_arr: [],
-      refreshing: false,
       show: false,
       ders_id: '',
       ders_adi: '',
+      showDelete: false,
+      loading: false,
     };
   }
-  // SAYFAYI YUKARI KAYDIRARAK RE-RENDER(TEKRAR YÜKLEME) YAPABİLMEMİZİ SAĞLIYOR.
-  handleResfresh = () => {
-    this.setState({refreshing: true}, () => {
-      this.FetchAllLessons();
-      this.setState({refreshing: false});
-    });
-  };
   FetchAllLessons = async () => {
-    const response = await fetch('http://bihaber.ankara.edu.tr/api/GetDersler');
-    const lessons = await response.json();
-    this.setState({my_lessons_arr: lessons}); //html elemanlarının tekrardan render edilmesini sağlar
+    await fetch('http://bihaber.ankara.edu.tr/api/GetDersler', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({my_lessons_arr: responseJson});
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   componentDidMount() {
     this._subscribe = this.props.navigation.addListener('didFocus', () => {
-      this.FetchAllLessons();
+      this.setState({loading: true});
+      setTimeout(() => {
+        this.setState({loading: false});
+        this.FetchAllLessons();
+      }, 2000);
     });
   }
 
@@ -57,6 +65,7 @@ class Dersler extends Component {
 
   // Sil butonuna tıklandığında...
   DeleteLesson = async gelen_ders_id => {
+    this.setState({showDelete: true});
     await fetch('http://bihaber.ankara.edu.tr/api/DeleteLesson', {
       method: 'POST',
       headers: {
@@ -66,8 +75,15 @@ class Dersler extends Component {
       body: JSON.stringify({
         silinecek_ders_id: this.state.ders_id,
       }),
-    });
-    this.setState({show: false});
+    })
+      .then(response => response.text())
+      .then(responseJson => {
+        this.setState({show: false});
+        setTimeout(() => {
+          this.setState({showDelete: false});
+          this.FetchAllLessons();
+        }, 2000);
+      });
   };
 
   render() {
@@ -135,10 +151,37 @@ class Dersler extends Component {
               </View>
             )}
             keyExtractor={(item, index) => index.toString()}
-            refreshing={this.state.refreshing}
-            onRefresh={this.handleResfresh}
           />
         </View>
+        {/*BEKLETMEK için popup uyarısı*/}
+        <Modal transparent={true} visible={this.state.showDelete}>
+          <View style={{backgroundColor: '#000000aa', flex: 1}}>
+            <View
+              style={{
+                backgroundColor: '#ffffff',
+                margin: 20,
+                marginTop: 200,
+                marginBottom: 200,
+                padding: 40,
+                borderRadius: 5,
+                flex: 1,
+                alignItems: 'center',
+              }}>
+              <Text>Ders siliniyor, lütfen bekleyiniz...</Text>
+              <Image
+                source={require('../../assets/images/spinner.gif')}
+                style={{width: 100, height: 100}}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  margin: 30,
+                  justifyContent: 'space-between',
+                }}
+              />
+            </View>
+          </View>
+        </Modal>
         <Modal transparent={true} visible={this.state.show}>
           <View style={{backgroundColor: '#000000aa', flex: 1}}>
             <View
@@ -172,6 +215,35 @@ class Dersler extends Component {
                   }}
                 />
               </View>
+            </View>
+          </View>
+        </Modal>
+        {/*YÜKLENİYOR için popup uyarısı*/}
+        <Modal transparent={true} visible={this.state.loading}>
+          <View style={{backgroundColor: '#000000aa', flex: 1}}>
+            <View
+              style={{
+                backgroundColor: '#ffffff',
+                margin: 20,
+                marginTop: 200,
+                marginBottom: 200,
+                padding: 40,
+                borderRadius: 5,
+                flex: 1,
+                alignItems: 'center',
+              }}>
+              <Text>Dersler yükleniyor, lütfen bekleyiniz...</Text>
+              <Image
+                source={require('../../assets/images/spinner.gif')}
+                style={{width: 100, height: 100}}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  margin: 30,
+                  justifyContent: 'space-between',
+                }}
+              />
             </View>
           </View>
         </Modal>

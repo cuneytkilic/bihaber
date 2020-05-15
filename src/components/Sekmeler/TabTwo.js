@@ -125,8 +125,8 @@ export default class tabTwo extends Component {
 
   render() {
     let ad_soyad = 'Akademisyen: ' + this.state.ad_soyad;
-    let donem = 'Donem: ' + this.state.donem;
-    let sinif = 'Sinif: ' + this.state.sinif;
+    let donem = 'Dönem: ' + this.state.donem;
+    let sinif = 'Sınıf: ' + this.state.sinif;
     return (
       <View style={styles.main}>
         <FlatList

@@ -9,7 +9,6 @@ import {
   Image,
   Button,
   Modal,
-  Alert,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 class Duyurular extends Component {
@@ -21,19 +20,34 @@ class Duyurular extends Component {
       yonetim_id: '',
       akademisyen_adi: '',
       show: false,
+      showDelete: false,
+      loading: false,
     };
   }
   FetchAllTeachers = async () => {
-    const response = await fetch(
-      'http://bihaber.ankara.edu.tr/api/GetAllTeachers',
-    );
-    const ogretmenler = await response.json();
-    this.setState({tum_duyurular: ogretmenler});
+    await fetch('http://bihaber.ankara.edu.tr/api/GetAllTeachers', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => response.json())
+      .then(responseJson => {
+        this.setState({teachers: responseJson});
+      })
+      .catch(error => {
+        console.error(error);
+      });
   };
 
   componentDidMount() {
     this._subscribe = this.props.navigation.addListener('didFocus', () => {
-      this.FetchAllTeachers();
+      this.setState({loading: true});
+      setTimeout(() => {
+        this.setState({loading: false});
+        this.FetchAllTeachers();
+      }, 2000);
     });
   }
 
@@ -43,6 +57,7 @@ class Duyurular extends Component {
 
   // Sil butonuna tıklandığında...
   DeleteTeacher = async ogretmen_id => {
+    this.setState({showDelete: true});
     await fetch('http://bihaber.ankara.edu.tr/api/DeleteTeacher', {
       method: 'POST',
       headers: {
@@ -53,8 +68,11 @@ class Duyurular extends Component {
         silinecek_ogretmen_id: ogretmen_id,
       }),
     });
-    this.FetchAllTeachers();
     this.setState({show: false});
+    setTimeout(() => {
+      this.setState({showDelete: false});
+      this.FetchAllTeachers();
+    }, 2000);
   };
 
   render() {
@@ -91,7 +109,7 @@ class Duyurular extends Component {
         {/* BODY - Tüm Bildirimlerin Listesi */}
         <View style={styles.BodyContainer}>
           <FlatList
-            data={this.state.tum_duyurular}
+            data={this.state.teachers}
             keyExtractor={(item, index) => index.toString()}
             //item parametresi = tablodaki attribute değerlerinin hepsini tutuyor.
             //örnek: ders_id, ders_adi, ders_adi, ...
@@ -158,6 +176,64 @@ class Duyurular extends Component {
                   }}
                 />
               </View>
+            </View>
+          </View>
+        </Modal>
+        {/*BEKLETMEK için popup uyarısı*/}
+        <Modal transparent={true} visible={this.state.showDelete}>
+          <View style={{backgroundColor: '#000000aa', flex: 1}}>
+            <View
+              style={{
+                backgroundColor: '#ffffff',
+                margin: 20,
+                marginTop: 200,
+                marginBottom: 200,
+                padding: 40,
+                borderRadius: 5,
+                flex: 1,
+                alignItems: 'center',
+              }}>
+              <Text>Akademisyen siliniyor, lütfen bekleyiniz...</Text>
+              <Image
+                source={require('../../assets/images/spinner.gif')}
+                style={{width: 100, height: 100}}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  margin: 30,
+                  justifyContent: 'space-between',
+                }}
+              />
+            </View>
+          </View>
+        </Modal>
+        {/*YÜKLENİYOR için popup uyarısı*/}
+        <Modal transparent={true} visible={this.state.loading}>
+          <View style={{backgroundColor: '#000000aa', flex: 1}}>
+            <View
+              style={{
+                backgroundColor: '#ffffff',
+                margin: 20,
+                marginTop: 200,
+                marginBottom: 200,
+                padding: 40,
+                borderRadius: 5,
+                flex: 1,
+                alignItems: 'center',
+              }}>
+              <Text>Akademisyenler yükleniyor...</Text>
+              <Image
+                source={require('../../assets/images/spinner.gif')}
+                style={{width: 100, height: 100}}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  margin: 30,
+                  justifyContent: 'space-between',
+                }}
+              />
             </View>
           </View>
         </Modal>

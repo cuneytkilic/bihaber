@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
   View,
@@ -93,7 +94,7 @@ export default class AddLesson extends Component {
         gonderilen_donem: this.state.donem,
       }),
     })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(responseJson => {})
       .catch(error => {
         console.error(error);
@@ -119,9 +120,8 @@ export default class AddLesson extends Component {
             style={{
               backgroundColor: '#3E53AE',
               justifyContent: 'center',
-              width: this.state.width * 0.75,
+              width: '60%',
               alignItems: 'center',
-              height: this.state.height * 0.08,
             }}>
             <Text style={styles.HeaderText}>Ders Ekle</Text>
           </View>
@@ -171,7 +171,6 @@ export default class AddLesson extends Component {
             <View style={styles.PickerContainer}>
               <View style={styles.sinif}>
                 <Picker
-                  itemStyle={styles.pickerItem}
                   mode="dropdown"
                   selectedValue={this.state.sinif}
                   onValueChange={this.onSinifValueChange.bind(this)}>
@@ -247,6 +246,7 @@ const styles = StyleSheet.create({
     color: 'white',
     textAlign: 'center',
     padding: 5,
+    fontSize: 18,
   },
   imageStyle: {
     width: 100,
@@ -262,8 +262,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     marginTop: 40,
     borderRadius: 20,
-    height: 40,
-    width: 200,
+    height: 50,
+    width: '50%',
     justifyContent: 'center',
   },
   inputContainer: {
@@ -271,23 +271,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
     marginTop: 10,
-    height: 40,
-    width: '60%',
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  passwordContainer: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    paddingHorizontal: 10,
-    borderRadius: 5,
-    margin: 5,
-    height: 40,
-    width: 250,
+    height: 50,
+    width: '70%',
     flexDirection: 'row',
     alignItems: 'center',
   },
   inputStyle: {
     flex: 1,
+    fontSize: 18,
   },
   container: {
     backgroundColor: '#DDDDE6',
@@ -301,6 +292,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-end',
     height: 50,
+    width: '100%',
+  },
+  backIconContainer: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    width: '23%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   HeaderImage: {
     width: 40,
@@ -311,14 +310,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#DDDDE6',
     width: '100%',
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  backIconContainer: {
-    paddingLeft: 10,
-    paddingRight: 10,
-    flex: 1,
-    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },

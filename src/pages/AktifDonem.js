@@ -37,7 +37,7 @@ export default class AktfiDonem extends Component {
         gonderilen_aktif_donem: this.state.aktif_donem,
       }),
     })
-      .then(response => response.json())
+      .then(response => response.text())
       .then(responseJson => {
         Alert.alert(
           'Güncel Dönem ' + this.state.aktif_donem + ' olarak ayarlandı.',

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React, {Component} from 'react';
 import {
   View,
@@ -6,6 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   Image,
+  Modal,
+  Button,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 class Duyurular extends Component {
@@ -14,15 +17,18 @@ class Duyurular extends Component {
 
     this.state = {
       tum_duyurular: [],
-      refreshing: false,
+      showDelete: false,
+      silinecek_duyuru_id: null,
     };
   }
-  // sayfayı aşağı kaydırarak re-render (tekrar yükeleme) yapabilmemizi sağlıyor.
-  handleResfresh = () => {
-    this.setState({refreshing: true}, () => {
+  componentDidMount() {
+    this._subscribe = this.props.navigation.addListener('didFocus', () => {
       this.FetchAllNotifications();
-      this.setState({refreshing: false});
     });
+  }
+  deletePopup = () => {
+    this.DeleteNotification(this.state.silinecek_duyuru_id);
+    this.setState({showDelete: false});
   };
   FetchAllNotifications = async () => {
     const response = await fetch(
@@ -32,15 +38,8 @@ class Duyurular extends Component {
     this.setState({tum_duyurular: notifications});
   };
 
-  componentDidMount() {
-    this._subscribe = this.props.navigation.addListener('didFocus', () => {
-      this.FetchAllNotifications();
-    });
-  }
-
   BildirimEklemeSayfasinaYonlendir = () => {
     this.props.navigation.navigate('NotificationAddPage');
-    this.setState({didUpdate: true});
   };
 
   // Sil butonuna tıklandığında...
@@ -57,6 +56,7 @@ class Duyurular extends Component {
     });
     this.FetchAllNotifications();
   };
+
   // DÜZENLE butonuna tıklandığında...
   UpdateNotification = async gelen_bildirim_id => {
     this.props.navigation.navigate('UpdateNotificationPage', {
@@ -108,16 +108,50 @@ class Duyurular extends Component {
                 {/*SİL butonu*/}
                 <TouchableOpacity
                   style={styles.dersDelete}
-                  onPress={() => this.DeleteNotification(item.Duyuru_id)}>
+                  onPress={() =>
+                    this.setState({
+                      silinecek_duyuru_id: item.Duyuru_id,
+                      showDelete: true,
+                    })
+                  }>
                   <Icon name="trash" size={20} />
                 </TouchableOpacity>
                 <Text style={styles.dersText}>{item.Duyuru_baslik}</Text>
               </View>
             )}
-            refreshing={this.state.refreshing}
-            onRefresh={this.handleResfresh}
           />
         </View>
+        {/*Silmek için popup uyarısı*/}
+        <Modal transparent={true} visible={this.state.showDelete}>
+          <View style={{backgroundColor: '#000000aa', flex: 1}}>
+            <View
+              style={{
+                backgroundColor: '#ffffff',
+                margin: 20,
+                marginTop: 200,
+                marginBottom: 200,
+                padding: 40,
+                borderRadius: 5,
+                flex: 1,
+              }}>
+              <Text>Silmek istediğinize emin misiniz?</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  margin: 30,
+                  justifyContent: 'space-between',
+                }}>
+                <Button title="EVET" onPress={() => this.deletePopup()} />
+                <Button
+                  title="HAYIR"
+                  onPress={() => {
+                    this.setState({showDelete: false});
+                  }}
+                />
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
