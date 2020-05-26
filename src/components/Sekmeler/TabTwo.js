@@ -9,9 +9,10 @@ import {
   TouchableOpacity,
   Button,
   Modal,
+  ImageBackground,
 } from 'react-native';
 import firebase from 'react-native-firebase';
-//import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default class tabTwo extends Component {
   static navigationOptions = {
@@ -122,13 +123,24 @@ export default class tabTwo extends Component {
       this.derslerim();
     });
   }
-
-  render() {
-    let ad_soyad = 'Akademisyen: ' + this.state.ad_soyad;
-    let donem = 'Dönem: ' + this.state.donem;
-    let sinif = 'Sınıf: ' + this.state.sinif;
-    return (
-      <View style={styles.main}>
+  klavuz_veya_bildirim_goruntule = () => {
+    if (this.state.derslerim_array.length === 0) {
+      return (
+        <View style={styles.klavuz_ustmetin}>
+          <ImageBackground
+            source={require('../../../assets/images/hakkinda_bg.png')}
+            style={styles.image}>
+            <Icon
+              name="info-circle"
+              size={50}
+              style={styles.klavuz_info_icon}
+            />
+            <Text>"Tüm Dersler" sekmesinden ders seçimi yapınız.</Text>
+          </ImageBackground>
+        </View>
+      );
+    } else {
+      return (
         <FlatList
           data={this.state.derslerim_array}
           renderItem={({item}) => (
@@ -165,6 +177,16 @@ export default class tabTwo extends Component {
           refreshing={this.state.refreshing}
           onRefresh={this.handleResfresh}
         />
+      );
+    }
+  };
+  render() {
+    let ad_soyad = 'Akademisyen: ' + this.state.ad_soyad;
+    let donem = 'Dönem: ' + this.state.donem;
+    let sinif = 'Sınıf: ' + this.state.sinif;
+    return (
+      <View style={styles.main}>
+        {this.klavuz_veya_bildirim_goruntule()}
         {/* info modal */}
         <Modal transparent={true} visible={this.state.show}>
           <View style={{backgroundColor: '#000000aa', flex: 1}}>
@@ -250,5 +272,23 @@ const styles = StyleSheet.create({
   },
   baslik_bolgesi: {
     left: 10,
+  },
+  klavuz_ustmetin: {
+    flex: 1,
+  },
+  klavuz_madde: {
+    paddingTop: 10,
+    paddingLeft: '8%',
+    fontSize: 16,
+  },
+  klavuz_info_icon: {
+    alignSelf: 'center',
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    alignItems: 'center',
+    opacity: 1,
   },
 });

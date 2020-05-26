@@ -45,12 +45,21 @@ class AkademisyenNotifPage extends Component {
       .then(response => response.json())
       .then(responseJson => {
         this.setState({my_lessons_arr: responseJson}); //html elemanlarının tekrardan render edilmesini sağlar
+        this.WarningMessage();
       })
       .catch(error => {
         console.error(error);
       });
   };
-
+  WarningMessage = () => {
+    if (this.state.my_lessons_arr.length === 0) {
+      Alert.alert(
+        'Size atanmış ders yok!',
+        'Lütfen Yönetici ile iletişime geçiniz. \n\n1) Yönetici: Özge Mercanoğlu Sincan\n2) Yönetici: Zeynep Yıldırım',
+      );
+      this.props.navigation.navigate('Akademisyen');
+    }
+  };
   componentDidMount = async () => {
     this.FetchAllLessonsOfAkademisyen(
       this.props.navigation.state.params.gonderilen_akademisyen_id,

@@ -74,6 +74,8 @@ export default class componentName extends Component {
               this.SendNotification(item.Token_id);
             });
             this.SaveNotification();
+          } else {
+            this.SaveNotification(); // dersi seçen kimse yoksa bildirim veritabanına kayıt edilecek.
           }
         })
         .catch(error => {

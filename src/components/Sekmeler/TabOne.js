@@ -10,11 +10,12 @@ import {
   Image,
   TouchableOpacity,
   Modal,
+  ImageBackground,
   Button,
 } from 'react-native';
 import firebase from 'react-native-firebase';
 import {ScrollView} from 'react-native-gesture-handler';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 export default class TabOne extends Component {
   constructor(props) {
     super(props);
@@ -83,6 +84,77 @@ export default class TabOne extends Component {
     var date = tarih;
     return Moment(date).format('DD.MM.YYYY');
   };
+  klavuz_veya_bildirim_goruntule = () => {
+    if (this.state.duyurularim_array.length === 0) {
+      return (
+        <View style={styles.klavuz_ustmetin}>
+          <ImageBackground
+            source={require('../../../assets/images/hakkinda_bg.png')}
+            style={styles.image}>
+            <Text style={{paddingLeft: 10, fontSize: 16}}>
+              Aşağıda bulunan herhangi bir sebepten dolayı bildirim
+              görüntülenmemektedir.
+            </Text>
+            <Text style={styles.klavuz_madde}>
+              <Icon name="angle-double-right" size={20} />
+              Herhangi bir dersi seçmediniz.
+            </Text>
+            <Text style={styles.klavuz_madde}>
+              <Icon name="angle-double-right" size={20} />
+              Seçtiğiniz dersler hakkında bildirim yok.
+            </Text>
+            <Icon
+              name="info-circle"
+              size={50}
+              style={styles.klavuz_info_icon}
+            />
+            <Text
+              style={{
+                paddingLeft: '2%',
+                paddingRight: '2%',
+              }}>
+              Daha önce gönderilmiş bildirimleri görüntülemek ve bundan sonra
+              seçtiğiniz dersler hakkında bildirim almak için "Tüm Dersler"
+              sekmesinden istediğiniz dersleri seçebilirsiniz.
+            </Text>
+          </ImageBackground>
+        </View>
+      );
+    } else {
+      return (
+        <FlatList
+          data={this.state.duyurularim_array}
+          renderItem={({item}) => (
+            <View style={styles.textContainer}>
+              <View style={{width: '90%'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text style={styles.ders_kodu}>{item.Ders_kodu} </Text>
+                  <Text style={styles.tarih}>
+                    ({this.tarih_goster(item.Duyuru_tarih)})
+                  </Text>
+                </View>
+                <Text style={styles.duyuru_icerik}>
+                  {this.karakter_kontrol(item.Duyuru_icerik)}
+                </Text>
+              </View>
+
+              <TouchableOpacity
+                style={styles.icon_style}
+                onPress={() => this.info(item.Duyuru_id)}>
+                <Image
+                  source={require('../../../assets/images/information_icon.png')}
+                  style={styles.resim_sytle}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+          keyExtractor={item => item.Duyuru_icerik}
+          refreshing={this.state.refreshing}
+          onRefresh={this.handleResfresh}
+        />
+      );
+    }
+  };
   info = async duyuru_id => {
     await fetch('http://bihaber.ankara.edu.tr/api/duyuru_bilgisi', {
       method: 'POST',
@@ -118,36 +190,7 @@ export default class TabOne extends Component {
     //let ad_soyad = '  Gönderen: ' + this.state.ad_soyad;
     return (
       <View style={styles.mainContainer}>
-        <FlatList
-          data={this.state.duyurularim_array}
-          renderItem={({item}) => (
-            <View style={styles.textContainer}>
-              <View style={{width: '90%'}}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={styles.ders_kodu}>{item.Ders_kodu} </Text>
-                  <Text style={styles.tarih}>
-                    ({this.tarih_goster(item.Duyuru_tarih)})
-                  </Text>
-                </View>
-                <Text style={styles.duyuru_icerik}>
-                  {this.karakter_kontrol(item.Duyuru_icerik)}
-                </Text>
-              </View>
-
-              <TouchableOpacity
-                style={styles.icon_style}
-                onPress={() => this.info(item.Duyuru_id)}>
-                <Image
-                  source={require('../../../assets/images/information_icon.png')}
-                  style={styles.resim_sytle}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-          keyExtractor={item => item.Duyuru_icerik}
-          refreshing={this.state.refreshing}
-          onRefresh={this.handleResfresh}
-        />
+        {this.klavuz_veya_bildirim_goruntule()}
         {/* info modal */}
         <Modal transparent={true} visible={this.state.show}>
           <View style={{backgroundColor: '#000000aa', flex: 1}}>
@@ -289,5 +332,25 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     color: '#246D76',
+  },
+  klavuz_ustmetin: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  klavuz_madde: {
+    paddingTop: 10,
+    paddingLeft: '8%',
+    fontSize: 16,
+  },
+  klavuz_info_icon: {
+    alignSelf: 'center',
+    paddingTop: 100,
+  },
+  image: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
+    opacity: 1,
   },
 });

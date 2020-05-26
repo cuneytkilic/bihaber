@@ -23,6 +23,7 @@ import UpdateNotificationPage from './src/pages/UpdateNotificationPage';
 import UpdateNotificationAkademisyenPage from './src/pages/UpdateNotificationAkademisyenPage';
 import firebase from 'react-native-firebase';
 import PushNotification from 'react-native-push-notification';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {
   Image,
@@ -71,6 +72,7 @@ class MainPage extends Component {
       password: '',
       token_control_arr: [],
       isLoading: true,
+      giris: null,
     };
   }
   componentDidMount() {
@@ -121,7 +123,7 @@ class MainPage extends Component {
         console.error(error);
       });
   };
-  LoginKontrol = async (gelen_username, gelen_password) => {
+  LoginKontrol = async (gelen_username, hashsiz_password, hashed_password) => {
     await fetch('http://bihaber.ankara.edu.tr/api/LoginProcess', {
       method: 'POST',
       headers: {
@@ -130,14 +132,16 @@ class MainPage extends Component {
       },
       body: JSON.stringify({
         Kullanici_Ad: gelen_username,
-        Sifre: gelen_password,
+        Sifre: hashed_password,
       }),
     })
       .then(response => response.json())
       .then(responseJson => {
         this.setState({my_res_arr: responseJson});
+        this._retrieveData();
         if (this.state.my_res_arr.length > 0) {
           //Eğer girilen bilgiler doğruysa buraya girecek
+          this.setState({giris: 1});
           var yetki_control = '';
           var passedAkademisyen_id = 0;
           this.state.my_res_arr.map(x => (yetki_control = x.Yetki));
@@ -147,11 +151,11 @@ class MainPage extends Component {
 
           if (yetki_control === '0') {
             this.Scrollable.close(); //bottomPage kapatmak için.
-            this.setState({user_name: '', password: ''});
+            this.storeData(gelen_username, hashsiz_password);
             this.props.navigation.navigate('AdminPage');
           } else {
             this.Scrollable.close();
-            this.setState({user_name: '', password: ''});
+            this.storeData(gelen_username, hashsiz_password);
             this.props.navigation.navigate('Akademisyen', {
               passedAkademisyen_id,
             });
@@ -167,9 +171,28 @@ class MainPage extends Component {
         console.error(error);
       });
   };
+  storeData = async (kullanici_adi, sifre) => {
+    try {
+      await AsyncStorage.setItem('kullanici_adi', kullanici_adi);
+      await AsyncStorage.setItem('sifre', sifre);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  _retrieveData = async () => {
+    try {
+      const kullanici_adi = await AsyncStorage.getItem('kullanici_adi');
+      const sifre = await AsyncStorage.getItem('sifre');
+      if (kullanici_adi !== null && sifre !== null) {
+        this.setState({user_name: kullanici_adi, password: sifre});
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   FindTheAdmin = async (gelen_username, gelen_password) => {
     sha256(gelen_password).then(hashed_password => {
-      this.LoginKontrol(gelen_username, hashed_password);
+      this.LoginKontrol(gelen_username, gelen_password, hashed_password);
     });
   };
   goToMainActivity = () => {
@@ -221,6 +244,7 @@ class MainPage extends Component {
                   onPress={() => {
                     this.Scrollable.open();
                     hideMenu();
+                    this._retrieveData();
                   }}>
                   Login
                 </MenuItem>

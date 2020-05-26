@@ -11,6 +11,7 @@ import {
   Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 class Akademisyen extends Component {
   constructor(props) {
     super(props);

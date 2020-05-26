@@ -248,7 +248,7 @@ export default class UpdateLesson extends Component {
 const styles = StyleSheet.create({
   PickerContainer: {
     backgroundColor: '#DDDDE6',
-    width: '60%',
+    width: '70%',
     height: 40,
     marginTop: 10,
     borderRadius: 5,
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
   },
   sinif: {
     backgroundColor: '#acacac',
-    width: '46%',
+    width: '48%',
     borderRadius: 5,
     marginRight: '2%',
     justifyContent: 'center',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
   donem: {
     backgroundColor: '#acacac',
-    width: '50%',
+    width: '48%',
     borderRadius: 5,
     marginLeft: '2%',
     justifyContent: 'center',

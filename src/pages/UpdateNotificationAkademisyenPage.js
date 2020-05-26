@@ -57,6 +57,9 @@ export default class UpdateNotificationAkademisyenPage extends Component {
             });
             this.SaveNotification();
             this.DeletePreviousNotification();
+          } else {
+            this.SaveNotification(); // dersi seçen kimse yoksa bildirim veritabanına kayıt edilecek.
+            this.DeletePreviousNotification();
           }
         })
         .catch(error => {
