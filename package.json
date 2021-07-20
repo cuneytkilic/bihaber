@@ -18,7 +18,7 @@
     "mysql": "^2.18.1",
     "native-base": "^2.13.8",
     "react": "16.9.0",
-    "react-native": "0.61.5",
+    "react-native": "0.62.3",
     "react-native-enhanced-popup-menu": "^0.6.1",
     "react-native-firebase": "^5.6.0",
     "react-native-gesture-handler": "^1.6.0",
